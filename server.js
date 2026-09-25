@@ -2,23 +2,31 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 const nodemailer = require('nodemailer');
+const path = require('path');
 
 const app = express();
 
-// Middlewares
+// MIDDLEWARES
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
 
-// 1. Conexión a MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Conectado exitosamente a MongoDB Atlas'))
-  .catch((err) => console.error('❌ Error al conectar a MongoDB:', err.message));
+// SERVIR ARCHIVOS ESTÁTICOS (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname)));
 
-// 2. Esquema BSON de la Reserva
+// CONEXIÓN A MONGODB ATLAS
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('❌ Error: Falta la variable MONGODB_URI en el archivo .env o en las variables de Render.');
+} else {
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log('✅ Conectado exitosamente a MongoDB Atlas'))
+    .catch(err => console.error('❌ Error de conexión a MongoDB Atlas:', err.message));
+}
+
+// ESQUEMA Y MODELO DE RESERVA
 const reservaSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   email: { type: String, required: true },
@@ -28,109 +36,129 @@ const reservaSchema = new mongoose.Schema({
   comensales: { type: String, required: true },
   alergias: { type: String, default: 'Ninguna' },
   ocasion: { type: String, default: 'Ninguna' },
-  origen: { type: String, default: 'Web' },
-  creadoEn: { type: Date, default: Date.now }
+  origen: { type: String, default: 'No especificado' },
+  fechaRegistro: { type: Date, default: Date.now }
 });
 
 const Reserva = mongoose.model('Reserva', reservaSchema);
 
-// 3. Configuración de Nodemailer
+// CONFIGURACIÓN DE NODEMAILER (COMPATIBLE CON RENDER - PUERTO 587 E IPv4)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
-  secure: false, // Usa STARTTLS en el puerto 587
+  secure: false, // Usa STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
-  }
+  },
+  connectionTimeout: 10000, // Timeout de 10 segundos
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+  family: 4 // Fuerza conexión por IPv4 (evita bloqueos de IPv6 en Render)
 });
 
-// Función para enviar correo de confirmación
-async function enviarCorreoConfirmacion(reserva) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log('⚠️ Correo no enviado: Faltan credenciales EMAIL_USER / EMAIL_PASS en .env');
-    return;
-  }
-
-  const mailOptions = {
-    from: `"Restaurante Verde Vida" <${process.env.EMAIL_USER}>`,
-    to: reserva.email,
-    subject: '🌱 Confirmación de tu reserva - Restaurante Verde Vida',
-    html: `
-      <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-        <h2 style="color: #2e7d32;">¡Reserva Confirmada en Verde Vida! 🌿</h2>
-        <p>Hola <strong>${reserva.nombre}</strong>,</p>
-        <p>Hemos recibido tu reserva correctamente. Aquí tienes los detalles:</p>
-        <div style="background-color: #f4f6f0; padding: 15px; border-radius: 8px; margin: 15px 0;">
-          <p>📅 <strong>Fecha:</strong> ${reserva.fecha}</p>
-          <p>⏰ <strong>Hora:</strong> ${reserva.hora} h</p>
-          <p>👥 <strong>Comensales:</strong> ${reserva.comensales}</p>
-          <p>⚠️ <strong>Alergias/Notas:</strong> ${reserva.alergias}</p>
-        </div>
-        <p>📍 <strong>Dirección:</strong> Calle Verde 123, 28001 Madrid</p>
-        <p>Si necesitas modificar tu reserva, puedes responder a este correo o llamarnos al +34 912 345 678.</p>
-        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
-        <p style="font-size: 0.8rem; color: #777;">Restaurante Verde Vida - Gastronomía Saludable y Sostenible</p>
-      </div>
-    `
-  };
-
-  await transporter.sendMail(mailOptions);
-  console.log(`✉️ Correo enviado con éxito a ${reserva.email}`);
-}
-
-// 4. Ruta POST: Guardar reserva y enviar correo
+// RUTA POST: CREAR RESERVA Y ENVIAR EMAIL
 app.post('/api/reservas', async (req, res) => {
   try {
-    const nuevaReserva = new Reserva(req.body);
-    const resultado = await nuevaReserva.save();
-    
-    // Intentar enviar el correo
+    const { nombre, email, telefono, fecha, hora, comensales, alergias, ocasion, origen } = req.body;
+
+    // 1. Guardar primero en MongoDB Atlas
+    const nuevaReserva = new Reserva({
+      nombre,
+      email,
+      telefono,
+      fecha,
+      hora,
+      comensales,
+      alergias,
+      ocasion,
+      origen
+    });
+
+    await nuevaReserva.save();
+    console.log(`✅ Reserva registrada en MongoDB Atlas para ${nombre}`);
+
+    // 2. Intentar enviar correo de confirmación de forma independiente
     try {
-      await enviarCorreoConfirmacion(resultado);
-    } catch (mailErr) {
-      console.error('⚠️ Error enviando el correo:', mailErr.message);
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        await transporter.sendMail({
+          from: `"Restaurante Verde Vida" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: 'Confirmación de tu reserva - Restaurante Verde Vida',
+          text: `¡Reserva Confirmada en Verde Vida! 🌿\n\n` +
+                `Hola ${nombre},\n\n` +
+                `Hemos recibido tu reserva correctamente. Aquí tienes los detalles:\n\n` +
+                `📅 Fecha: ${fecha}\n` +
+                `⏰ Hora: ${hora} h\n` +
+                `👥 Comensales: ${comensales}\n` +
+                `⚠️ Alergias/Notas: ${alergias}\n` +
+                `🎉 Ocasión: ${ocasion}\n\n` +
+                `📍 Dirección: Calle Verde 123, 28001 Madrid\n` +
+                `📞 Teléfono: +34 912 345 678\n\n` +
+                `Si necesitas modificar tu reserva, puedes responder a este correo o llamarnos.\n\n` +
+                `Restaurante Verde Vida - Gastronomía Saludable y Sostenible`
+        });
+        console.log(`✉️ Correo de confirmación enviado a ${email}`);
+      } else {
+        console.warn('⚠️ EMAIL_USER o EMAIL_PASS no están configurados. Correo omitido.');
+      }
+    } catch (emailError) {
+      console.error('⚠️ La reserva se guardó en la BD, pero hubo un detalle al enviar el correo:', emailError.message);
     }
 
-    res.status(201).json({ status: 'ok', data: resultado });
+    // 3. Responder al cliente que la reserva fue exitosa
+    return res.status(200).json({
+      status: 'ok',
+      message: 'Reserva guardada con éxito'
+    });
+
   } catch (error) {
-    console.error('Error al guardar reserva:', error);
-    res.status(500).json({ status: 'error', message: error.message });
+    console.error('❌ Error al procesar la reserva:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al registrar la reserva en la base de datos'
+    });
   }
 });
 
-// 5. Ruta POST: Asistente Virtual Cody
+// RUTA POST: CHATBOT VIRTUAL CODY
 app.post('/api/chat', (req, res) => {
   const { mensaje } = req.body;
-  const msg = (mensaje || '').toLowerCase();
-  let respuesta = '';
-
-  if (msg.includes('plato') || msg.includes('recomiend') || msg.includes('comer') || msg.includes('carta')) {
-    respuesta = '🍲 Te recomiendo probar nuestro *Bowl Verde Nutritivo* (12,50 €) con quinoa y tahini, o nuestro famoso *Curry de Verduras con Leche de Coco* (14,00 €). ¡Son los más pedidos!';
-  } else if (msg.includes('vegan') || msg.includes('gluten') || msg.includes('alergia') || msg.includes('celiac')) {
-    respuesta = '🌱 Toda nuestra carta es 100% plant-based (vegana). Además, tenemos opciones 100% libres de gluten indicadas en la carta o puedes aclararlo al reservar.';
-  } else if (msg.includes('horario') || msg.includes('hora') || msg.includes('abierto')) {
-    respuesta = '🕒 Abrimos de Martes a Domingo: Comidas de 13:30 h a 16:30 h y Cenas de 20:30 h a 23:30 h.';
-  } else if (msg.includes('donde') || msg.includes('ubicacion') || msg.includes('direccion') || msg.includes('llegar')) {
-    respuesta = '📍 Estamos ubicados en Calle Verde 123, 28001 Madrid (cerca del Metro Retiro).';
-  } else if (msg.includes('reserva') || msg.includes('mesa') || msg.includes('reservar')) {
-    respuesta = '📅 Puedes hacer tu reserva directamente en la sección "Reserva tu Mesa" de esta web. ¡Recibirás un correo de confirmación al instante!';
-  } else {
-    respuesta = '🤖 Hola, soy Cody. Puedo ayudarte con sugerencias de platos del menú, horarios, alérgenos o asistirte para realizar tu reserva. ¿Qué te gustaría consultar?';
+  if (!mensaje) {
+    return res.json({ respuesta: '¡Hola! Soy Cody. ¿En qué puedo ayudarte hoy?' });
   }
 
-  res.json({ respuesta });
+  const msg = mensaje.toLowerCase();
+  let respuesta = '';
+
+  if (msg.includes('hola') || msg.includes('buenas')) {
+    respuesta = '¡Hola! Bienvenida/o a Restaurante Verde Vida 🌿. ¿En qué puedo ayudarte hoy? Puedo informarte sobre el menú, horarios o alérgenos.';
+  } else if (msg.includes('plato') || msg.includes('menu') || msg.includes('carta') || msg.includes('comer')) {
+    respuesta = 'Nuestra carta cuenta con 9 opciones 100% plant-based: desde el Bowl Verde Nutritivo, Curry de Verduras, hasta Tacos de Jackfruit y Tiramisú de Anacardo. ¡Todos preparados con ingredientes locales de Km 0!';
+  } else if (msg.includes('reserva') || msg.includes('reservar') || msg.includes('mesa')) {
+    respuesta = 'Puedes reservar tu mesa directamente rellenando el formulario que encontrarás más abajo en esta misma página. ¡Recibirás un correo de confirmación al instante!';
+  } else if (msg.includes('horario') || msg.includes('abierto') || msg.includes('hora')) {
+    respuesta = 'Nuestro horario de apertura es de Martes a Domingo: Comidas de 13:30 h a 16:30 h y Cenas de 20:30 h a 23:30 h. (Lunes cerrado por descanso).';
+  } else if (msg.includes('donde') || msg.includes('direccion') || msg.includes('ubicacion') || msg.includes('llegar')) {
+    respuesta = 'Estamos ubicados en Calle Verde 123, 28001 Madrid, cerca del Parque del Retiro.';
+  } else if (msg.includes('gluten') || msg.includes('alergia') || msg.includes('intolerancia') || msg.includes('vegano')) {
+    respuesta = 'Toda nuestra carta es 100% vegetariana y vegana. Además, contamos con opciones adaptadas sin gluten y sin frutos secos. Puedes indicárnoslo en la casilla de alergias al reservar.';
+  } else {
+    respuesta = 'Gracias por tu consulta 🌿. Para una atención más personalizada, puedes llamarnos al +34 912 345 678 o escribirnos por WhatsApp desde el botón del pie de página.';
+  }
+
+  return res.json({ respuesta });
 });
 
-// Ruta principal
-app.get('/', (req, res) => {
+// SERVIR EL FRONTEND EN CUALQUIER OTRA RUTA
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Iniciar servidor
+// PUERTO DE ESCUCHA (ADAPTATIVO PARA RENDER)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor listo en http://localhost:${PORT}`);
