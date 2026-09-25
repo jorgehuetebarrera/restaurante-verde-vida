@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Verde Vida | Gastronomía Saludable y Sostenible</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --accent: #81c784;
+            --bg-light: #f4f6f0;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 1rem;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; max-width: 600px; }
+
+        .btn {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn:hover { 
+            background-color: var(--primary-dark); 
+            transform: translateY(-2px);
+        }
+
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 2rem;
+        }
+
+        /* FILOSOFÍA AMPLIADA CON ACORDEÓN / DESPLEGABLE */
+        .philosophy-intro {
+            background: #e8f5e9;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.15rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            border: 1px solid var(--accent);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .philosophy-card-full {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border-top: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: transform 0.3s ease;
+        }
+
+        .philosophy-card-full:hover {
+            transform: translateY(-4px);
+        }
+
+        .philosophy-card-full h3 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .philosophy-card-full p {
+            color: #444;
+            font-size: 0.98rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        /* Ocultar por defecto las tarjetas extra (4 a 7) */
+        .extra-card {
+            display: none;
+        }
+
+        .toggle-btn-container {
+            text-align: center;
+            margin-top: 2.5rem;
+        }
+
+        /* GRID DEL MENÚ (9 PLATOS) */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .menu-card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .menu-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .menu-card p {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+        }
+
+        .booking-container {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: span 2; }
+        label { font-weight: 600; margin-bottom: 0.5rem; }
+        input, select { padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+
+        /* CHATBOT CODY */
+        .chat-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+        }
+
+        .chat-btn {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-box {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .chat-box.active { display: flex; }
+
+        .chat-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            height: 300px;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .msg {
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            max-width: 85%;
+            line-height: 1.4;
+        }
+
+        .msg.bot { background: #e8f5e9; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--primary); color: var(--white); align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input input {
+            flex: 1;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 0;
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 450px;
+        }
+
+        footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .whatsapp-btn {
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .chat-box { width: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#" class="logo">🌿 Verde Vida</a>
+            <ul class="nav-links">
+                <li><a href="#filosofia">Filosofía</a></li>
+                <li><a href="#menu">Menú</a></li>
+                <li><a href="#reservas">Reservar</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Restaurante Verde Vida</h1>
+        <p>Sabor, salud y sostenibilidad en cada plato. Una experiencia gastronómica plant-based en el corazón de Madrid.</p>
+        <a href="#reservas" class="btn">Reservar una Mesa</a>
+    </section>
+
+    <!-- SECCIÓN DE FILOSOFÍA CON DESPLEGABLE (MOSTRAR MÁS) -->
+    <section id="filosofia">
+        <h2 class="section-title">Nuestra Filosofía y Compromiso</h2>
+        
+        <div class="philosophy-intro">
+            "En Verde Vida entendemos la gastronomía como un acto de reconexión profunda con la naturaleza, la salud humana y la responsabilidad ética frente al planeta."
+        </div>
+
+        <div class="philosophy-grid">
+
+            <!-- PILAR 1 (VISIBLE) -->
+            <article class="philosophy-card-full">
+                <h3>🌱 1. El Origen de Nuestra Semilla</h3>
+                <p>
+                    En un mundo acelerado donde la prisa ha desplazado a la pausa y la producción industrial ha alienado a las personas de la procedencia real de sus alimentos, Restaurante Verde Vida nace como un refugio urbano de reconexión consciente. No nos concebimos simplemente como un establecimiento de hostelería o un restaurante plant-based más; nos proyectamos como un ecosistema vivo de transformación social, ética y culinaria. Nuestra semilla germinó a partir de una pregunta fundamental que formulamos en nuestros inicios: ¿Es posible alimentarnos de manera exquisita, nutricionalmente óptima y profundamente satisfactoria sin generar una huella de destrucción en los ecosistemas ni en los seres sintientes que habitan este planeta? La respuesta rotunda y entusiasta a este interrogante constituyó el cimiento inamovible sobre el cual erigimos cada receta, cada alianza comercial y cada decisión operativa. Creemos firmemente que cada plato que servimos en nuestra mesa constituye un acto político, una declaración explícita de intenciones y una oportunidad diaria para sanar nuestra relación con el entorno natural. Comer en Verde Vida no es únicamente satisfacer el apetito primario, sino participar activamente en un modelo alimentario circular, respetuoso y compasivo. Nos mueve la convicción inquebrantable de que la alta cocina y la sostenibilidad medioambiental no son conceptos antagónicos, sino aliados indispensables para garantizar el futuro de nuestra comunidad y de las próximas generaciones.
+                </p>
+            </article>
+
+            <!-- PILAR 2 (VISIBLE) -->
+            <article class="philosophy-card-full">
+                <h3>🥑 2. Gastronomía Consciente y Salud Holística</h3>
+                <p>
+                    Entendemos la comida como la medicina más poderosa, accesible y cotidiana a nuestro alcance. En la cocina de Verde Vida, cada ingrediente es seleccionado rigurosamente no solo por su perfil organoléptico —su aroma, textura, color y potencia de sabor—, sino por su valor biológico real y su impacto directo en la vitalidad humana. Rechazamos categóricamente el uso de ultraprocesados, azúcares refinados sintéticos, aditivos químicos artificiales, colorantes y conservantes industriales que saturan la oferta alimentaria moderna. En su lugar, celebramos la riqueza intrínseca de los alimentos integrales y vivos: legumbres germinadas en nuestras propias instalaciones, cereales ancestrales como la quinoa real, el mijo, el trigo sarraceno y la espelta integral, frutos secos activados mediante remojo para maximizar su bioaccesibilidad y una variedad infinita de verduras y hortalizas frescas. Abordamos el bienestar desde una perspectiva holística e integral: aquello que introducimos en nuestro organismo condiciona de forma directa nuestros niveles diarios de energía, nuestra claridad mental, el equilibrio microbiótico y nuestro estado de ánimo. Por esta razón, nuestro equipo de cocina trabaja estrechamente con especialistas en nutrición para estructurar platos armónicos que aportan proteínas de alto valor biológico, grasas saludables de extracción en frío, antioxidantes naturales y una riqueza enzimática intacta que nutre en profundidad a nivel celular.
+                </p>
+            </article>
+
+            <!-- PILAR 3 (VISIBLE) -->
+            <article class="philosophy-card-full">
+                <h3>🚜 3. Compromiso Km 0 y Agricultura Regenerativa</h3>
+                <p>
+                    El verdadero corazón de nuestra cocina habita en la tierra fértil. Mantenemos una alianza sagrada, transparente y directa con pequeños agricultores, huertas familiares y cooperativas locales de la Comunidad de Madrid y sus comarcas limítrofes. Prescindimos deliberadamente de los grandes intermediarios comerciales y de las cadenas de transporte transcontinental que incrementan de forma alarmante las emisiones de CO2 y deterioran la calidad nutricional de los alimentos antes de llegar al plato. Priorizamos aquellos cultivos provenientes de la agricultura ecológica certificada y, muy especialmente, de la agricultura regenerativa. Este modelo agrícola va un paso más allá de evitar pesticidas o fertilizantes químicos sintéticos: la agricultura regenerativa recupera activamente la capa arable del suelo, fomenta la biodiversidad microbiana, optimiza el ciclo natural del agua y captura carbono atmosférico. Al nutrirnos de alimentos cultivados en suelos vivos y minerales, garantizamos una concentración superior de fitonutrientes en cada preparación. Nuestra oferta culinaria es vivaz y estacional; no forzamos a la naturaleza a darnos tomates en pleno invierno ni cítricos en los meses más cálidos. Respetamos con veneración los ritmos biológicos de la tierra, celebrando la llegada de cada estación con nuevas creaciones que conectan de forma sincera al comensal con el calendario agrícola real.
+                </p>
+            </article>
+
+            <!-- PILAR 4 (OCULTO POR DEFECTO) -->
+            <article class="philosophy-card-full extra-card">
+                <h3>♻️ 4. Sostenibilidad Activa y Filosofía "Zero Waste"</h3>
+                <p>
+                    El respeto genuino por los recursos finitos del planeta exige una responsabilidad técnica y ética absoluta en la gestión integral de nuestros residuos. En Verde Vida operamos bajo un estricto protocolo interno de economía circular y desperdicio cero (Zero Waste). En nuestros fogones, las partes vegetales que históricamente han sido descartadas en la hostelería convencional —como pieles limpiezas de hortalizas, tallos de hierbas frescas, hojas exteriores o semillas— son revalorizadas creativamente mediante técnicas culinarias avanzadas: elaboramos fondos concentrados de gran complejidad umami, fermentos artesanales, aceites aromatizados por infusión y crujientes deshidratados. Aquella materia orgánica residual que inevitablemente no puede ser aprovechada gastronómicamente es procesada en nuestro compostador para convertirse en abono orgánico de máxima calidad, el cual devolvemos a las huertas locales con las que colaboramos, cerrando de forma perfecta el ciclo de la vida. Asimismo, hemos erradicado por completo los plásticos de un solo uso en toda nuestra operativa. Nuestros envases de entrega a domicilio son 100% biodegradables y compostables, fabricados a partir de caña de azúcar y fécula de maíz. Por su parte, el agua que servimos a nuestros clientes es purificada al instante mediante sistemas de ósmosis inversa y mineralización equilibrada, evitando el consumo y desecho de miles de botellas plásticas cada año.
+                </p>
+            </article>
+
+            <!-- PILAR 5 (OCULTO POR DEFECTO) -->
+            <article class="philosophy-card-full extra-card">
+                <h3>🐾 5. Ética, Respeto Animal y Bienestar Planetario</h3>
+                <p>
+                    Nuestra decisión de ofrecer una propuesta gastronómica 100% plant-based (basada íntegramente en plantas) nace de una profunda empatía hacia todos los seres sintientes con los que compartimos este planeta. Reconocemos con solidez científica que la ganadería y la pesca intensivas son responsables de un porcentaje desproporcionado de las emisiones mundiales de gases de efecto invernadero, la deforestación de bosques tropicales, la pérdida masiva de biodiversidad marina y el consumo excesivo de agua dulce. Al excluir voluntaria y totalmente los ingredientes de origen animal —carnes, pescados, mariscos, lácteos y huevos— demostramos cada día que es perfectamente factible disfrutar de una experiencia gastronómica memorable, indulgente y sofisticada sin causar daño animal ni agotar los recursos de la Tierra. Nos proponemos democratizar la cocina vegetal despojándola de prejuicios, estereotipos reductores o formulaciones aburridas. Mostramos a comensales carnívoros, vegetarianos y veganos por igual que la alimentación vegetal no implica renuncia alguna, sino el descubrimiento de un universo infinito de texturas, matices cremosos, ahumados y potencia gastronómica. Cada servicio realizado en Verde Vida representa una contribución tangible a la preservación del agua, la reducción de la huella hídrica y la mitigación del calentamiento global.
+                </p>
+            </article>
+
+            <!-- PILAR 6 (OCULTO POR DEFECTO) -->
+            <article class="philosophy-card-full extra-card">
+                <h3>🍳 6. Innovación Culinaria y Alta Fermentación</h3>
+                <p>
+                    Lejos de percibir la ausencia de ingredientes de origen animal como una limitación, consideramos que la cocina basada en plantas representa la última gran frontera de la innovación gastronómica mundial. La búsqueda constante de la excelencia nos impulsa a fusionar tradiciones culinarias ancestrales con las técnicas vanguardistas más refinadas. La fermentación natural ocupa un lugar privilegiado en nuestro taller de I+D: elaboramos nuestros propios misos a base de legumbres autóctonas, tempeh de garbanzo castellano, kombuchas naturales infusionadas con botánicos silvestres y quesos madurados artesanales formulados con anacardos y cultivos probióticos vivos. A través de estos procesos biológicos respetuosos, logramos desarrollar perfiles organolépticos profundos y llenos de umami que cautivan a los paladares más exigentes, al tiempo que aportamos beneficios directos a la salud de la microbiota intestinal de nuestros clientes. Nuestros cocineros investigan incansablemente para reinterpretar elaboraciones clásicas mediterráneas e internacionales, elevando a las hortalizas humildes a la categoría de protagonistas indiscutibles del plato mediante cocciones precisas a baja temperatura, ahumados naturales con maderas nobles, emulsiones sedosas y texturizados vegetales innovadores.
+                </p>
+            </article>
+
+            <!-- PILAR 7 (OCULTO POR DEFECTO) -->
+            <article class="philosophy-card-full extra-card">
+                <h3>🤝 7. Comunidad, Impacto Social y Transparencia</h3>
+                <p>
+                    Restaurante Verde Vida es mucho más que un espacio físico para comer; es un punto de encuentro, diálogo, aprendizaje y transformación social en el corazón urbano de Madrid. Entendemos nuestra labor como la de un agente activo de cambio positivo dentro de la comunidad. Mantenemos un compromiso firme con la creación de empleo digno, ético y estable, garantizando condiciones de trabajo equitativas, horarios de conciliación real y un entorno profesional basado en el respeto mutuo, la formación continua y la pasión por la gastronomía saludable. Asimismo, abrimos nuestras puertas a la ciudadanía organizando talleres divulgativos sobre nutrición consciente, charlas sobre sostenibilidad ambiental, catas de vinos ecológicos de mínima intervención y encuentros culturales que promueven un estilo de vida más armónico y saludable. Nos mueve el deseo de inspirar a personas, familias y empresas a adoptar hábitos de consumo más responsables y conscientes con su entorno. Creemos con convicción que los pequeños cambios cotidianos, sostenidos en el tiempo por personas comprometidas, poseen la capacidad real de transformar la sociedad. Cada cliente que nos visita forma parte de esta gran comunidad que sueña, cocina y trabaja por un futuro infinitamente más verde, próspero, ético y luminoso.
+                </p>
+            </article>
+
+        </div>
+
+        <!-- BOTÓN MOSTRAR MÁS / MENOS -->
+        <div class="toggle-btn-container">
+            <button id="btn-toggle-philosophy" class="btn" onclick="togglePhilosophy()">Mostrar más</button>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE MENÚ (9 PLATOS) -->
+    <section id="menu">
+        <h2 class="section-title">Nuestra Carta Gastronómica</h2>
+        <div class="menu-grid">
+            
+            <!-- Plato 1 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80" alt="Bowl Verde">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Bowl Verde Nutritivo</h3>
+                        <p>Quinoa, aguacate, garbanzos tostados, kale, germinados y aliño de sésamo con crema de tahini.</p>
+                    </div>
+                    <div class="price">12,50 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 2 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=500&q=80" alt="Curry de Verduras">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Curry de Verduras y Leche de Coco</h3>
+                        <p>Verduras de temporada, tofu salteado, curry suave al estilo tailandés y arroz jazmín al vapor.</p>
+                    </div>
+                    <div class="price">14,00 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 3 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?auto=format&fit=crop&w=500&q=80" alt="Tosta de Hummus">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Tosta de Hummus y Tomates Confitados</h3>
+                        <p>Pan artesanal de masa madre, hummus de garbanzo de la casa y frutos secos tostados.</p>
+                    </div>
+                    <div class="price">9,50 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 4 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=500&q=80" alt="Hamburguesa Vegana">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Hamburguesa de Lentejas y Nuez</h3>
+                        <p>Medallón artesanal, queso vegano fundido, rúcula fresca, tomate seco y gajos de boniato asado.</p>
+                    </div>
+                    <div class="price">13,50 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 5 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80" alt="Ramen de Miso">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Ramen de Miso y Setas Shiitake</h3>
+                        <p>Fideos artesanales, caldo de miso especiado, tofu marinado, bok choy orgánico y edamame.</p>
+                    </div>
+                    <div class="price">14,50 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 6 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=500&q=80" alt="Lasaña de Calabacín">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Lasaña de Calabacín y Espinacas</h3>
+                        <p>Láminas de calabacín, bechamel suave de anacardos, espinacas baby y gratinado de queso vegetal.</p>
+                    </div>
+                    <div class="price">13,00 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 7 (Imagen corregida de tacos) -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=500&q=80" alt="Tacos al Pastor Veganos">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Tacos de Jackfruit "al Pastor"</h3>
+                        <p>Tortillas de maíz, jackfruit sazonado con achiote, piña asada, cebolla morada y cilantro fresco.</p>
+                    </div>
+                    <div class="price">12,00 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 8 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80" alt="Ensalada Burrata">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Burrata Artesanal Vegana</h3>
+                        <p>Base de anacardos, tomates cherry de huerta, pesto de albahaca fresca y reducción de módena.</p>
+                    </div>
+                    <div class="price">11,50 €</div>
+                </div>
+            </div>
+
+            <!-- Plato 9 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80" alt="Tiramisú de Anacardos">
+                <div class="menu-card-content">
+                    <div>
+                        <h3>Tiramisú de Anacardo y Café Ecológico</h3>
+                        <p>Bizcocho de avena bañado en café de especialidad, mousse cremosa de anacardos y cacao puro.</p>
+                    </div>
+                    <div class="price">6,50 €</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FORMULARIO DE RESERVA -->
+    <section id="reservas">
+        <h2 class="section-title">Reserva tu Mesa</h2>
+        <div class="booking-container">
+            <form id="booking-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" id="nombre" required placeholder="Ej. Jorge Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo electrónico *</label>
+                        <input type="email" id="email" required placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono de contacto *</label>
+                        <input type="tel" id="telefono" required placeholder="+34 600 000 000">
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha">Fecha de la reserva *</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hora">Hora *</label>
+                        <select id="hora" required>
+                            <option value="">Selecciona hora</option>
+                            <option value="13:30">13:30 h</option>
+                            <option value="14:00">14:00 h</option>
+                            <option value="14:30">14:30 h</option>
+                            <option value="20:30">20:30 h</option>
+                            <option value="21:00">21:00 h</option>
+                            <option value="21:30">21:30 h</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comensales">Número de comensales *</label>
+                        <select id="comensales" required>
+                            <option value="1 persona">1 persona</option>
+                            <option value="2 personas" selected>2 personas</option>
+                            <option value="3 personas">3 personas</option>
+                            <option value="4 personas">4 personas</option>
+                            <option value="5+ personas">Más de 5 personas</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="alergias">Alergias o intolerancias alimentarias</label>
+                        <input type="text" id="alergias" placeholder="Ej. Sin gluten, celíaco, frutos secos...">
+                    </div>
+                    <div class="form-group">
+                        <label for="ocasion">Ocasión especial</label>
+                        <select id="ocasion">
+                            <option value="Ninguna">Ninguna</option>
+                            <option value="Cumpleaños">Cumpleaños</option>
+                            <option value="Aniversario">Aniversario</option>
+                            <option value="Comida de empresa">Comida de empresa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="origen">¿Cómo nos conociste?</label>
+                        <select id="origen">
+                            <option value="Redes sociales">Redes sociales</option>
+                            <option value="Recomendación de un amigo">Recomendación de un amigo</option>
+                            <option value="Búsqueda en Google">Búsqueda en Google</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width" style="margin-top: 1rem;">
+                        <button type="submit" class="btn" style="width: 100%;">Confirmar Reserva</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer id="contacto">
+        <h3>Restaurante Verde Vida</h3>
+        <p>Calle Verde 123, 28001 Madrid, España</p>
+        <p>Teléfono: +34 912 345 678</p>
+        <a href="https://wa.me/34912345678" class="whatsapp-btn" target="_blank">📲 Contactar por WhatsApp Business</a>
+        <p style="margin-top: 1.5rem; font-size: 0.8rem;">© 2026 Verde Vida. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- ASISTENTE VIRTUAL CODY -->
+    <div class="chat-widget">
+        <button class="chat-btn" onclick="toggleChat()">🤖</button>
+        <div class="chat-box" id="chat-box">
+            <div class="chat-header">
+                <span>🤖 Cody - Asistente Verde Vida</span>
+                <span style="cursor:pointer;" onclick="toggleChat()">✕</span>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">¡Hola! Soy Cody 🌿. ¿Te ayudo a elegir entre nuestros 9 platos del menú, resolver dudas sobre alérgenos o consultar horarios?</div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input-text" placeholder="Escribe tu consulta..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendChatMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN DE RESERVA -->
+    <div class="modal" id="modal-reserva">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); margin-bottom: 1rem;">¡Reserva Confirmada! 📧</h2>
+            <p>Tu reserva ha sido registrada en la base de datos y te hemos enviado un <strong>correo de confirmación</strong> a tu email.</p>
+            <button class="btn" style="margin-top: 1.5rem;" onclick="closeModal()">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        
+        const API_BASE = ''; // Dejar vacío para que funcione tanto en localhost como en producción
+
+        // LÓGICA MOSTRAR MÁS / MOSTRAR MENOS EN FILOSOFÍA
+        let philosophyExpanded = false;
+
+        function togglePhilosophy() {
+            const extraCards = document.querySelectorAll('.extra-card');
+            const btn = document.getElementById('btn-toggle-philosophy');
+
+            philosophyExpanded = !philosophyExpanded;
+
+            extraCards.forEach(card => {
+                card.style.display = philosophyExpanded ? 'flex' : 'none';
+            });
+
+            btn.textContent = philosophyExpanded ? 'Mostrar menos' : 'Mostrar más';
+        }
+
+        // PROCESAR FORMULARIO DE RESERVA Y ENVIAR CORREO
+        document.getElementById('booking-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const datosReserva = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+                comensales: document.getElementById('comensales').value,
+                alergias: document.getElementById('alergias').value || 'Ninguna',
+                ocasion: document.getElementById('ocasion').value || 'Ninguna',
+                origen: document.getElementById('origen').value || 'No especificado'
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/reservas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosReserva)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok && resultado.status === 'ok') {
+                    document.getElementById('modal-reserva').style.display = 'flex';
+                    this.reset();
+                } else {
+                    alert('Error al guardar reserva: ' + (resultado.message || 'Error del servidor'));
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                alert('No se pudo conectar con el servidor. Ejecuta "npm start" en la terminal.');
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('modal-reserva').style.display = 'none';
+        }
+
+        // CHATBOT ASISTENTE VIRTUAL CODY
+        function toggleChat() {
+            document.getElementById('chat-box').classList.toggle('active');
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input-text');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const container = document.getElementById('chat-messages');
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'msg user';
+            userDiv.textContent = msg;
+            container.appendChild(userDiv);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: msg })
+                });
+                const data = await res.json();
+
+                const botDiv = document.createElement('div');
+                botDiv.className = 'msg bot';
+                botDiv.textContent = data.respuesta;
+                container.appendChild(botDiv);
+                container.scrollTop = container.scrollHeight;
+            } catch (err) {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'msg bot';
+                botDiv.textContent = 'Lo siento, no pude conectarme con el servidor. Por favor intenta más tarde.';
+                container.appendChild(botDiv);
+            }
+        }
+    </script>
+</body>
+</html>

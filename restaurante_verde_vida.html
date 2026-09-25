@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Verde Vida - Cocina Saludable & Ecológica</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#217346', // Color principal oficial
+                            700: '#195a36',
+                            800: '#14462b',
+                            900: '#0f3621',
+                        },
+                        earth: {
+                            50: '#fcfbf8',
+                            100: '#f7f4ee',
+                            800: '#3e342a',
+                        }
+                    },
+                    fontFamily: {
+                        title: ['Montserrat', 'sans-serif'],
+                        body: ['Open Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Montserrat & Open Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #2d3748;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .bg-hero {
+            background-image: linear-gradient(rgba(15, 54, 33, 0.75), rgba(15, 54, 33, 0.85)), url('https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+        }
+        .bg-philosophy {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #217346;
+            border-radius: 4px;
+        }
+        .json-key { color: #e06c75; }
+        .json-string { color: #98c379; }
+        .json-number { color: #d19a66; }
+        .json-boolean { color: #56b6c2; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-md group-hover:bg-brand-700 transition">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold text-brand-600 tracking-tight block leading-tight font-title">Verde Vida</span>
+                        <span class="text-xs text-gray-500 font-medium tracking-wide">Restaurante Ecológico</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700">
+                    <a href="#inicio" class="hover:text-brand-600 transition-colors">Inicio</a>
+                    <a href="#filosofia" class="hover:text-brand-600 transition-colors">Nuestra Filosofía</a>
+                    <a href="#menu" class="hover:text-brand-600 transition-colors">Menú</a>
+                    <a href="#chatbot" class="hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-robot text-brand-600"></i> Asistente Cody.ai
+                    </a>
+                    <a href="#reservas" class="hover:text-brand-600 transition-colors">Reservar Mesa</a>
+                    <a href="#contacto" class="hover:text-brand-600 transition-colors">Contacto</a>
+                </nav>
+
+                <!-- Action Button & DB Drawer Toggle -->
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMongoModal()" class="px-3.5 py-2 rounded-lg bg-emerald-50 text-brand-600 border border-brand-200 hover:bg-brand-600 hover:text-white font-medium text-xs sm:text-sm flex items-center gap-2 transition shadow-sm">
+                        <i class="fa-solid fa-database text-brand-600 group-hover:text-white"></i>
+                        <span>MongoDB (`reservas`)</span>
+                        <span id="nav-db-count" class="bg-brand-600 text-white text-xs px-2 py-0.5 rounded-full font-bold ml-1">0</span>
+                    </button>
+                    <a href="#reservas" class="hidden sm:inline-flex px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition shadow-md hover:shadow-lg items-center gap-2">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>Reservar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- SECCIÓN 1: Encabezado (Header / Hero) -->
+        <section id="inicio" class="relative bg-hero text-white py-24 sm:py-32 md:py-40 px-4 text-center flex items-center justify-center min-h-[85vh]">
+            <div class="max-w-4xl mx-auto space-y-6 animate-fade-in">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-emerald-200 text-sm font-medium">
+                    <i class="fa-solid fa-seedling"></i> 100% Ingredientes Ecológicos & Locales
+                </div>
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight font-title leading-tight drop-shadow-md">
+                    Restaurante Verde Vida
+                </h1>
+                <p class="text-lg sm:text-2xl md:text-3xl font-light text-gray-100 max-w-3xl mx-auto drop-shadow leading-relaxed">
+                    Cocina saludable, ingredientes ecológicos, sabor auténtico
+                </p>
+                <div class="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#reservas" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-utensils"></i> Reserva tu Mesa
+                    </a>
+                    <a href="#chatbot" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-lg border border-white/30 transition flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-comments"></i> Pregunta a Cody.ai
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Bottom Curve Divider -->
+            <div class="absolute bottom-0 left-0 right-0 h-12 bg-gray-50 [clip-path:polygon(0_100%,100%_100%,100%_0)]"></div>
+        </section>
+
+        <!-- SECCIÓN 2: Sobre Nosotros / Nuestra Filosofía -->
+        <section id="filosofia" class="py-20 bg-philosophy border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <!-- Text Content -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 text-brand-600 font-bold tracking-wider text-xs uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                            <i class="fa-solid fa-heart"></i> Compromiso con el bienestar
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 font-title tracking-tight">
+                            Nuestra filosofía
+                        </h2>
+                        <blockquote class="text-xl sm:text-2xl font-semibold text-brand-700 leading-snug border-l-4 border-brand-600 pl-4 py-1 italic">
+                            "En Verde Vida creemos que comer bien es vivir bien. Usamos ingredientes de temporada, procedentes de agricultura ecológica local. Sin conservantes, sin aditivos, con todo el sabor."
+                        </blockquote>
+                        <p class="text-gray-600 text-base leading-relaxed">
+                            Nuestra cocina está concebida para nutrir cuerpo y alma. Colaboramos estrechamente con agricultores de la región de Madrid para ofrecer platos frescos, vivos y llenos de nutrientes que respetan el ritmo natural de la tierra.
+                        </p>
+                        
+                        <div class="grid grid-cols-3 gap-4 pt-4 text-center">
+                            <div class="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                                <i class="fa-solid fa-leaf text-2xl text-brand-600 mb-1"></i>
+                                <div class="text-xs font-bold text-gray-800">100% Orgánico</div>
+                            </div>
+                            <div class="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                                <i class="fa-solid fa-tractor text-2xl text-brand-600 mb-1"></i>
+                                <div class="text-xs font-bold text-gray-800">Productor Local</div>
+                            </div>
+                            <div class="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                                <i class="fa-solid fa-shield-halved text-2xl text-brand-600 mb-1"></i>
+                                <div class="text-xs font-bold text-gray-800">Sin Aditivos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Content -->
+                    <div class="lg:col-span-5 relative">
+                        <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800" alt="Equipo e instalaciones de Restaurante Verde Vida" class="w-full h-[400px] object-cover hover:scale-105 transition duration-500">
+                            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white">
+                                <p class="font-title font-bold text-lg">Nuestro Equipo & Local</p>
+                                <p class="text-xs text-gray-200">Calle de la Salud 23, Madrid - Cocina transparente y acogedora</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: Nuestro Menú (Resumen visual en 3 columnas) -->
+        <section id="menu" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                    <span class="text-brand-600 font-bold tracking-wider text-xs uppercase bg-emerald-100/60 px-3 py-1 rounded-full">Sabores de Temporada</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 font-title">Nuestro Menú</h2>
+                    <p class="text-gray-600 text-sm sm:text-base">Una muestra visual de nuestras especialidades estrella de la casa. Consulta el menú completo preguntando a nuestro asistente virtual Cody.ai.</p>
+                </div>
+
+                <!-- 3 Columns Menu Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Column 1 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
+                        <div class="relative h-56 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=600" alt="Bowl Verde" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-4 right-4 bg-brand-600 text-white font-bold px-3 py-1.5 rounded-full text-sm shadow-md">
+                                8,50€
+                            </span>
+                            <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-xs font-semibold px-2.5 py-1 rounded-md">
+                                <i class="fa-solid fa-leaf text-emerald-600 mr-1"></i> Vegano
+                            </span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 font-title mb-2 group-hover:text-brand-600 transition">Bowl Verde</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Quinoa, aguacate, espinacas y aliño de limón</p>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                                <span><i class="fa-solid fa-wheat-awn-circle-exclamation text-amber-500 mr-1"></i> Sin Gluten</span>
+                                <span class="font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Rico en Omega 3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
+                        <div class="relative h-56 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&q=80&w=600" alt="Curry de verduras" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-4 right-4 bg-brand-600 text-white font-bold px-3 py-1.5 rounded-full text-sm shadow-md">
+                                12,50€
+                            </span>
+                            <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-xs font-semibold px-2.5 py-1 rounded-md">
+                                <i class="fa-solid fa-pepper-hot text-red-500 mr-1"></i> Especiado Suave
+                            </span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 font-title mb-2 group-hover:text-brand-600 transition">Curry de verduras</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Verduras de temporada con leche de coco</p>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                                <span><i class="fa-solid fa-leaf text-emerald-600 mr-1"></i> 100% Vegetal</span>
+                                <span class="font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Plato Caliente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
+                        <div class="relative h-56 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&q=80&w=600" alt="Tosta de hummus" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-4 right-4 bg-brand-600 text-white font-bold px-3 py-1.5 rounded-full text-sm shadow-md">
+                                11,00€
+                            </span>
+                            <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md text-brand-800 text-xs font-semibold px-2.5 py-1 rounded-md">
+                                <i class="fa-solid fa-bread-slice text-amber-700 mr-1"></i> Masa Madre Artesanal
+                            </span>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 font-title mb-2 group-hover:text-brand-600 transition">Tosta de hummus</h3>
+                                <p class="text-gray-600 text-sm leading-relaxed">Pan de masa madre, hummus casero y tomate cherry</p>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                                <span><i class="fa-solid fa-seedling text-emerald-600 mr-1"></i> Garbanzos Ecológicos</span>
+                                <span class="font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Favorito</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notice about Chatbot -->
+                <div class="mt-12 bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-left flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 font-title">¿Quieres consultar el menú completo o alérgenos?</h4>
+                            <p class="text-xs text-gray-600">Nuestro Chatbot de Cody.ai incrustado abajo tiene la información detallada e interactiva.</p>
+                        </div>
+                    </div>
+                    <a href="#chatbot" class="shrink-0 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition">
+                        Consultar Menú Completo
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: Chatbot (Cody.ai Incrustado) -->
+        <section id="chatbot" class="py-20 bg-white border-t border-b border-gray-200">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10 space-y-2">
+                    <span class="text-brand-600 font-bold tracking-wider text-xs uppercase bg-emerald-100/70 px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-microchip mr-1"></i> Integración Cody.ai
+                    </span>
+                    <h2 class="text-3xl font-extrabold text-gray-900 font-title">Asistente Virtual Verde Vida</h2>
+                    <p class="text-gray-600 text-sm">Resuelve dudas sobre el menú, ingredientes, alérgenos, horarios o reservas en tiempo real.</p>
+                </div>
+
+                <!-- Chatbot Widget Window -->
+                <div class="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800 flex flex-col h-[580px]">
+                    <!-- Chat Header -->
+                    <div class="bg-brand-600 text-white p-4 flex items-center justify-between shadow-md">
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <div class="w-10 h-10 rounded-full bg-white text-brand-600 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-brand-600 rounded-full"></span>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-base font-title leading-tight">Cody.ai - Bot Verde Vida</h3>
+                                    <span class="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full uppercase font-mono">En Línea</span>
+                                </div>
+                                <p class="text-xs text-emerald-100">Entrenado con la carta, alérgenos y horarios</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-emerald-100 text-sm">
+                            <button title="Reiniciar conversación" onclick="resetChat()" class="p-2 hover:bg-brand-700 rounded-lg transition">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Log Area -->
+                    <div id="chat-messages" class="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-900 text-slate-100 custom-scrollbar">
+                        <!-- Initial Welcome Message exact from PDF -->
+                        <div class="flex items-start gap-3 max-w-[88%]">
+                            <div class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200 shadow-sm leading-relaxed space-y-2">
+                                <p class="font-semibold text-emerald-400">¡Hola! Soy el asistente virtual de Restaurante Verde Vida. Puedo ayudarte con:</p>
+                                <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs sm:text-sm pl-1">
+                                    <li>Información sobre nuestro menú y platos del día</li>
+                                    <li>Consultas sobre ingredientes y alérgenos</li>
+                                    <li>Nuestros horarios y ubicación</li>
+                                    <li>Información sobre reservas de mesa</li>
+                                </ul>
+                                <p class="pt-1 font-medium text-slate-200">¿En qué puedo ayudarte hoy?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Suggestions -->
+                    <div class="px-4 py-2 bg-slate-800/80 border-t border-slate-700/60 flex items-center gap-2 overflow-x-auto custom-scrollbar text-xs">
+                        <span class="text-slate-400 shrink-0 font-medium"><i class="fa-solid fa-lightbulb text-amber-400"></i> Sugerencias:</span>
+                        <button onclick="sendQuickMessage('¿Qué platos tenéis sin gluten o veganos?')" class="shrink-0 px-3 py-1 bg-slate-700 hover:bg-brand-600 text-slate-200 hover:text-white rounded-full transition">
+                            ¿Platos sin gluten / veganos?
+                        </button>
+                        <button onclick="sendQuickMessage('¿Cuáles son vuestros horarios y dirección?')" class="shrink-0 px-3 py-1 bg-slate-700 hover:bg-brand-600 text-slate-200 hover:text-white rounded-full transition">
+                            Horarios y ubicación
+                        </button>
+                        <button onclick="sendQuickMessage('¿Cómo puedo hacer una reserva de mesa?')" class="shrink-0 px-3 py-1 bg-slate-700 hover:bg-brand-600 text-slate-200 hover:text-white rounded-full transition">
+                            ¿Cómo reservar mesa?
+                        </button>
+                    </div>
+
+                    <!-- Input Box -->
+                    <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 bg-slate-800 border-t border-slate-700 flex items-center gap-2">
+                        <input id="chat-input" type="text" placeholder="Escribe tu consulta sobre el menú, alérgenos o reservas..." required class="flex-grow bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-400 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-brand-500 transition">
+                        <button type="submit" class="px-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition flex items-center gap-2 text-sm shrink-0">
+                            <span>Enviar</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: Formulario de Reserva de Mesa -->
+        <section id="reservas" class="py-20 bg-gray-50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+                    <!-- Form Header -->
+                    <div class="bg-brand-600 p-8 text-white text-center space-y-2">
+                        <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto text-2xl backdrop-blur-md">
+                            <i class="fa-regular fa-calendar-check text-white"></i>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold font-title">Reserva de Mesa - Restaurante Verde Vida</h2>
+                        <p class="text-emerald-100 text-sm max-w-xl mx-auto">
+                            Rellena este formulario para reservar tu mesa. Recibirás un email de confirmación en menos de 5 minutos.
+                        </p>
+                    </div>
+
+                    <!-- Form Body -->
+                    <form id="booking-form" onsubmit="handleReservationSubmit(event)" class="p-6 sm:p-10 space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            
+                            <!-- 1. Nombre completo -->
+                            <div class="sm:col-span-2">
+                                <label for="nombre" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    1. Nombre completo <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fa-regular fa-user"></i>
+                                    </span>
+                                    <input type="text" id="nombre" name="nombre" required placeholder="Ej. María García López" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition">
+                                </div>
+                            </div>
+
+                            <!-- 2. Email de contacto -->
+                            <div>
+                                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    2. Email de contacto <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fa-regular fa-envelope"></i>
+                                    </span>
+                                    <input type="email" id="email" name="email" required placeholder="tuemail@ejemplo.com" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition">
+                                </div>
+                            </div>
+
+                            <!-- 3. Teléfono de contacto -->
+                            <div>
+                                <label for="telefono" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    3. Teléfono de contacto <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </span>
+                                    <input type="tel" id="telefono" name="telefono" required placeholder="+34 600 000 000" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition">
+                                </div>
+                            </div>
+
+                            <!-- 4. Fecha de la reserva -->
+                            <div>
+                                <label for="fecha" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    4. Fecha de la reserva <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="date" id="fecha" name="fecha" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition">
+                                </div>
+                            </div>
+
+                            <!-- 5. Hora preferida -->
+                            <div>
+                                <label for="hora" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    5. Hora preferida <span class="text-red-500">*</span>
+                                </label>
+                                <select id="hora" name="hora" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition bg-white">
+                                    <option value="" disabled selected>Selecciona hora...</option>
+                                    <option value="13:00">13:00 hs (Almuerzo)</option>
+                                    <option value="14:00">14:00 hs (Almuerzo)</option>
+                                    <option value="15:00">15:00 hs (Almuerzo)</option>
+                                    <option value="20:00">20:00 hs (Cena)</option>
+                                    <option value="21:00">21:00 hs (Cena)</option>
+                                    <option value="21:30">21:30 hs (Cena)</option>
+                                </select>
+                            </div>
+
+                            <!-- 6. Número de comensales -->
+                            <div class="sm:col-span-2">
+                                <label for="comensales" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    6. Número de comensales <span class="text-red-500">*</span>
+                                </label>
+                                <select id="comensales" name="comensales" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition bg-white">
+                                    <option value="" disabled selected>Selecciona cantidad de personas...</option>
+                                    <option value="1">1 Persona</option>
+                                    <option value="2">2 Personas</option>
+                                    <option value="3">3 Personas</option>
+                                    <option value="4">4 Personas</option>
+                                    <option value="5">5 Personas</option>
+                                    <option value="6">6 Personas</option>
+                                    <option value="Más de 6">Más de 6 personas (Grupo)</option>
+                                </select>
+                            </div>
+
+                            <!-- 7. ¿Tenéis alguna alergia o intolerancia? -->
+                            <div class="sm:col-span-2">
+                                <label for="alergias" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    7. ¿Tenéis alguna alergia o intolerancia? <span class="text-gray-400 font-normal">(Opcional)</span>
+                                </label>
+                                <textarea id="alergias" name="alergias" rows="2" placeholder="Ej. Intolerancia al gluten, alergia a frutos secos..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"></textarea>
+                            </div>
+
+                            <!-- 8. ¿Ocasión especial? -->
+                            <div>
+                                <label for="ocasion" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    8. ¿Ocasión especial? <span class="text-gray-400 font-normal">(Opcional)</span>
+                                </label>
+                                <select id="ocasion" name="ocasion" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition bg-white">
+                                    <option value="Ninguna" selected>Ninguna</option>
+                                    <option value="Cumpleaños">Cumpleaños</option>
+                                    <option value="Aniversario">Aniversario</option>
+                                    <option value="Reunión de trabajo">Reunión de trabajo</option>
+                                </select>
+                            </div>
+
+                            <!-- 9. ¿Cómo nos has conocido? -->
+                            <div>
+                                <label for="comoNosConocio" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    9. ¿Cómo nos has conocido? <span class="text-gray-400 font-normal">(Opcional)</span>
+                                </label>
+                                <select id="comoNosConocio" name="comoNosConocio" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition bg-white">
+                                    <option value="Web" selected>Página Web</option>
+                                    <option value="Instagram">Instagram</option>
+                                    <option value="Recomendación">Recomendación</option>
+                                    <option value="Google">Búsqueda en Google</option>
+                                    <option value="Otro">Otro medio</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <p class="text-xs text-gray-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-lock text-brand-600"></i> Tus datos van a la base de datos MongoDB y activan Make.
+                            </p>
+                            <button type="submit" class="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                <span>Confirmar Reserva</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6 & 7: Contacto, Ubicación y Redes Sociales -->
+        <section id="contacto" class="py-20 bg-white border-t border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    
+                    <!-- Columna Left: Información de contacto -->
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 text-brand-600 font-bold tracking-wider text-xs uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                            <i class="fa-solid fa-location-dot"></i> Encuéntranos
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 font-title">Contacto y Horarios</h2>
+                        
+                        <div class="space-y-4 text-gray-700 text-sm">
+                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center text-lg shrink-0">
+                                    <i class="fa-solid fa-map-pin"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">Dirección</p>
+                                    <p class="text-gray-600">Calle de la Salud 23, Madrid</p>
+                                    <a href="https://maps.google.com/?q=Calle+de+la+Salud+23+Madrid" target="_blank" class="text-xs font-semibold text-brand-600 hover:underline mt-1 inline-block">Abrir en Google Maps &rarr;</a>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center text-lg shrink-0">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">Teléfono & WhatsApp</p>
+                                    <p class="text-gray-600">+34 XXX XXX XXX</p>
+                                    <p class="text-xs text-gray-500">Atención para modificaciones de reserva</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center text-lg shrink-0">
+                                    <i class="fa-regular fa-clock"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">Horarios de Apertura</p>
+                                    <p class="text-gray-600">Lunes a Domingo: 13:00 - 16:00 hs (Comidas) y 20:00 - 23:30 hs (Cenas)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Right: Redes Sociales, WhatsApp Business & Compartir -->
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 text-brand-600 font-bold tracking-wider text-xs uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                            <i class="fa-solid fa-share-nodes"></i> Redes & Comunidad
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 font-title">Conecta con Nosotros</h2>
+                        
+                        <!-- WhatsApp Business Direct Button -->
+                        <div class="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-3">
+                            <h3 class="font-bold text-brand-800 text-base flex items-center gap-2 font-title">
+                                <i class="fa-brands fa-whatsapp text-xl text-emerald-600"></i> WhatsApp Business Directo
+                            </h3>
+                            <p class="text-xs text-gray-600">¿Tienes preguntas rápidas sobre el menú o reservas? Inicia un chat instantáneo:</p>
+                            <a href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20información" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow transition w-full sm:w-auto">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                                <span>Contactar por WhatsApp Business</span>
+                            </a>
+                        </div>
+
+                        <!-- Social Profiles -->
+                        <div class="space-y-3">
+                            <p class="text-xs font-bold uppercase text-gray-500 tracking-wider">Nuestras Redes Sociales:</p>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="https://instagram.com" target="_blank" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-xs flex items-center gap-2 shadow hover:opacity-90 transition">
+                                    <i class="fa-brands fa-instagram text-base"></i> Instagram
+                                </a>
+                                <a href="https://facebook.com" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs flex items-center gap-2 shadow hover:bg-blue-700 transition">
+                                    <i class="fa-brands fa-facebook text-base"></i> Facebook
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" class="px-4 py-2.5 rounded-xl bg-sky-700 text-white font-semibold text-xs flex items-center gap-2 shadow hover:bg-sky-800 transition">
+                                    <i class="fa-brands fa-linkedin text-base"></i> LinkedIn
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Share Buttons specified in PDF -->
+                        <div class="pt-4 border-t border-gray-100 space-y-3">
+                            <p class="text-xs font-bold uppercase text-gray-500 tracking-wider">Compartir esta web con amigos:</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                                <a id="share-fb" href="https://www.facebook.com/sharer/sharer.php?u=sites.google.com/view/verde-vida-restaurante" target="_blank" class="p-2.5 border border-gray-200 rounded-lg text-center hover:bg-blue-50 hover:border-blue-300 font-medium transition text-gray-700 flex items-center justify-center gap-1.5">
+                                    <i class="fa-brands fa-facebook text-blue-600"></i> Facebook
+                                </a>
+                                <a id="share-tw" href="https://twitter.com/intent/tweet?url=sites.google.com/view/verde-vida-restaurante&text=¡Descubre Verde Vida!" target="_blank" class="p-2.5 border border-gray-200 rounded-lg text-center hover:bg-sky-50 hover:border-sky-300 font-medium transition text-gray-700 flex items-center justify-center gap-1.5">
+                                    <i class="fa-brands fa-x-twitter text-black"></i> Twitter/X
+                                </a>
+                                <a id="share-li" href="https://www.linkedin.com/sharing/share-offsite/?url=sites.google.com/view/verde-vida-restaurante" target="_blank" class="p-2.5 border border-gray-200 rounded-lg text-center hover:bg-sky-50 hover:border-sky-300 font-medium transition text-gray-700 flex items-center justify-center gap-1.5">
+                                    <i class="fa-brands fa-linkedin text-sky-700"></i> LinkedIn
+                                </a>
+                                <a id="share-wa" href="https://api.whatsapp.com/send?text=¡Prueba Verde Vida! sites.google.com/view/verde-vida-restaurante" target="_blank" class="p-2.5 border border-gray-200 rounded-lg text-center hover:bg-emerald-50 hover:border-emerald-300 font-medium transition text-gray-700 flex items-center justify-center gap-1.5">
+                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-10 border-t border-gray-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+            <div class="flex items-center justify-center gap-2 text-white font-bold text-lg font-title">
+                <i class="fa-solid fa-leaf text-brand-500"></i>
+                <span>Restaurante Verde Vida</span>
+            </div>
+            <p>Práctica Integración y Automatización Digital v2.0 - Google Sites + Cody.ai + Google Forms + Google Sheets + Make + Gmail + Google Calendar + MongoDB</p>
+            <p class="text-gray-500">© 2026 Restaurante Verde Vida. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- CUSTOM CONFIRMATION MODAL (No alert()) -->
+    <div id="confirmation-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-gray-100 transform transition-all animate-scale-in space-y-6 text-center">
+            <div class="w-20 h-20 rounded-full bg-emerald-100 text-brand-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="space-y-3">
+                <h3 class="text-2xl font-extrabold text-gray-900 font-title">¡Reserva Recibida!</h3>
+                <div class="text-left bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-xs sm:text-sm text-gray-800 space-y-2 leading-relaxed">
+                    <p class="font-bold text-brand-800 text-base">¡Gracias por tu reserva en Restaurante Verde Vida!</p>
+                    <p>Hemos recibido tu solicitud correctamente.</p>
+                    <p class="font-semibold text-emerald-700">En menos de 5 minutos recibirás un email de confirmación con todos los detalles.</p>
+                    <hr class="border-emerald-200">
+                    <p class="text-xs text-gray-600">
+                        Si necesitas modificar o cancelar tu reserva, contáctanos en:<br>
+                        <strong>reservas@verdevida.com</strong> | <strong>WhatsApp: +34 XXX XXX XXX</strong>
+                    </p>
+                    <p class="font-bold text-brand-700 text-center pt-1">¡Te esperamos!</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                <button onclick="closeConfirmationModal()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl shadow transition">
+                    Aceptar y Cerrar
+                </button>
+                <button onclick="closeConfirmationModal(); toggleMongoModal();" class="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-sm rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-database text-brand-600"></i> Ver en MongoDB
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MONGODB COLLECTION INSPECTOR MODAL -->
+    <div id="mongo-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-gray-900 text-gray-100 rounded-3xl max-w-5xl w-full h-[90vh] flex flex-col shadow-2xl border border-gray-800 overflow-hidden">
+            
+            <!-- Drawer Header -->
+            <div class="bg-gray-800 p-5 border-b border-gray-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-lg font-title text-white">MongoDB Atlas - Colección `reservas`</h3>
+                            <span class="text-xs bg-emerald-900 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-700">db.reservas.find()</span>
+                        </div>
+                        <p class="text-xs text-gray-400">Base de datos de reservas en tiempo real con BSON ObjectIds & Automatización Make</p>
+                    </div>
+                </div>
+                <button onclick="toggleMongoModal()" class="w-9 h-9 rounded-xl bg-gray-700 hover:bg-gray-600 text-gray-300 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="bg-slate-950 p-4 border-b border-gray-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-400">Vista:</span>
+                    <button id="btn-view-cards" onclick="setMongoView('cards')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white font-medium">Tarjetas Documento</button>
+                    <button id="btn-view-json" onclick="setMongoView('json')" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium">BSON JSON Raw</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="seedSampleData()" class="px-3 py-1.5 rounded-lg bg-indigo-900/60 text-indigo-200 hover:bg-indigo-800 border border-indigo-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus-circle"></i> Insertar Demo Doc
+                    </button>
+                    <button onclick="simulateMakeTrigger()" class="px-3 py-1.5 rounded-lg bg-amber-900/60 text-amber-200 hover:bg-amber-800 border border-amber-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt"></i> Simular Make Automation
+                    </button>
+                    <button onclick="clearMongoDb()" class="px-3 py-1.5 rounded-lg bg-red-900/40 text-red-300 hover:bg-red-800/60 border border-red-800 transition">
+                        Limpiar Colección
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div id="mongo-content" class="flex-grow p-6 overflow-y-auto custom-scrollbar bg-slate-900">
+                <!-- Dynamic Content injected by JS -->
+            </div>
+
+            <!-- Drawer Footer -->
+            <div class="bg-gray-800 p-4 border-t border-gray-700 text-xs text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Conectado a cluster local MongoDB (Simulado en memoria/Storage)</span>
+                </div>
+                <div>
+                    Documentos almacenados: <strong id="mongo-doc-counter" class="text-emerald-400 font-mono">0</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Simulated MongoDB Store initialized with sample PDF data
+        const MONGO_KEY = 'verde_vida_mongodb_reservas';
+        
+        function getMongoCollection() {
+            const data = localStorage.getItem(MONGO_KEY);
+            if (!data) {
+                const initialDocs = [
+                    {
+                        _id: "ObjectId('65f8a1e2b3c4d5e6f7a8b901')",
+                        nombre: "Ana Martínez Fernández",
+                        email: "ana.martinez@ejemplo.com",
+                        telefono: "+34 612 345 678",
+                        fecha: "2026-05-15",
+                        hora: "14:00",
+                        comensales: "2",
+                        alergias: "Intolerancia a la lactosa",
+                        ocasion: "Aniversario",
+                        comoNosConocio: "Instagram",
+                        createdAt: new Date().toISOString(),
+                        estado: "Confirmada",
+                        makeAutomation: {
+                            gmailConfirmationSent: true,
+                            googleCalendarEventCreated: true,
+                            executedAt: new Date().toISOString()
+                        }
+                    }
+                ];
+                localStorage.setItem(MONGO_KEY, JSON.stringify(initialDocs));
+                return initialDocs;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveMongoCollection(docs) {
+            localStorage.setItem(MONGO_KEY, JSON.stringify(docs));
+            updateNavDbCount();
+        }
+
+        function generateObjectId() {
+            const timestamp = Math.floor(Date.now() / 1000).toString(16);
+            const random = 'x'.replace(/[xy]/g, function() {
+                return (Math.random() * 16 | 0).toString(16);
+            }).repeat(16).substring(0, 16);
+            return `ObjectId('${timestamp}${random}')`;
+        }
+
+        function updateNavDbCount() {
+            const docs = getMongoCollection();
+            const counter = document.getElementById('nav-db-count');
+            if (counter) counter.textContent = docs.length;
+            const counterModal = document.getElementById('mongo-doc-counter');
+            if (counterModal) counterModal.textContent = docs.length;
+        }
+
+        // Chatbot Knowledge Base based on PDF
+        function getChatbotResponse(input) {
+            const query = input.toLowerCase();
+            
+            if (query.includes('menú') || query.includes('menu') || query.includes('plato') || query.includes('comer') || query.includes('carta')) {
+                return `🍽️ <strong>Menú de Restaurante Verde Vida:</strong><br><br>
+                • <strong>Bowl Verde (8,50€):</strong> Quinoa, aguacate, espinacas y aliño de limón.<br>
+                • <strong>Curry de verduras (12,50€):</strong> Verduras de temporada cocinadas con leche de coco.<br>
+                • <strong>Tosta de hummus (11,00€):</strong> Pan artesanal de masa madre, hummus casero y tomates cherry.<br><br>
+                ¡Todos nuestros ingredientes son 100% ecológicos de agricultura local!`;
+            }
+
+            if (query.includes('alergia') || query.includes('gluten') || query.includes('vegano') || query.includes('intoleran') || query.includes('alérgeno') || query.includes('alergeno')) {
+                return `🌱 <strong>Ingredientes y Alérgenos:</strong><br><br>
+                • <strong>Bowl Verde:</strong> 100% Sin Gluten y Vegano.<br>
+                • <strong>Curry de verduras:</strong> Sin Gluten y 100% Vegetal (contiene sésamo opcional).<br>
+                • <strong>Tosta de hummus:</strong> Opción con pan sin gluten disponible bajo petición.<br><br>
+                Indícanos cualquier alergia en el campo del formulario de reserva y adaptaremos tu plato.`;
+            }
+
+            if (query.includes('horario') || query.includes('donde') || query.includes('dónde') || query.includes('ubicacion') || query.includes('ubicación') || query.includes('direccion') || query.includes('dirección') || query.includes('calle')) {
+                return `📍 <strong>Ubicación y Horarios:</strong><br><br>
+                • <strong>Dirección:</strong> Calle de la Salud 23, Madrid.<br>
+                • <strong>Almuerzos:</strong> Lunes a Domingo de 13:00 a 16:00 hs.<br>
+                • <strong>Cenas:</strong> Lunes a Domingo de 20:00 a 23:30 hs.`;
+            }
+
+            if (query.includes('reserva') || query.includes('reservar') || query.includes('mesa') || query.includes('formulario')) {
+                return `📅 <strong>Información sobre Reservas:</strong><br><br>
+                Puedes reservar directamente en esta web rellenando el formulario de abajo.<br>
+                Al instante, tus datos se guardarán en nuestra base de datos y la automatización Make creará tu evento en Google Calendar y te enviará un email de confirmación personalizado.`;
+            }
+
+            return `¡Gracias por consultar a Verde Vida! Soy el bot oficial entrenado con nuestra carta ecológico-saludable.<br><br>
+            Puedes preguntarme sobre:<br>
+            1. <strong>Menú y platos del día</strong><br>
+            2. <strong>Alérgenos e ingredientes</strong><br>
+            3. <strong>Horarios y ubicación (Calle de la Salud 23)</strong><br>
+            4. <strong>Cómo reservar mesa</strong>`;
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            appendChatMessage('user', message);
+            input.value = '';
+
+            // Show typing indicator
+            const chatLog = document.getElementById('chat-messages');
+            const typingId = 'typing-' + Date.now();
+            const typingHtml = `
+                <div id="${typingId}" class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shrink-0">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-2xl rounded-tl-none text-xs text-slate-400 italic">
+                        Cody.ai está escribiendo...
+                    </div>
+                </div>
+            `;
+            chatLog.insertAdjacentHTML('beforeend', typingHtml);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            setTimeout(() => {
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
+                const response = getChatbotResponse(message);
+                appendChatMessage('bot', response);
+            }, 600);
+        }
+
+        function sendQuickMessage(text) {
+            document.getElementById('chat-input').value = text;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function appendChatMessage(sender, text) {
+            const chatLog = document.getElementById('chat-messages');
+            let msgHtml = '';
+
+            if (sender === 'user') {
+                msgHtml = `
+                    <div class="flex items-start justify-end gap-3">
+                        <div class="bg-brand-600 text-white p-3.5 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">
+                            ${text}
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs shrink-0 mt-1">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                msgHtml = `
+                    <div class="flex items-start gap-3 max-w-[88%]">
+                        <div class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200 shadow-sm leading-relaxed space-y-2">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatLog.insertAdjacentHTML('beforeend', msgHtml);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function resetChat() {
+            const chatLog = document.getElementById('chat-messages');
+            chatLog.innerHTML = `
+                <div class="flex items-start gap-3 max-w-[88%]">
+                    <div class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200 shadow-sm leading-relaxed space-y-2">
+                        <p class="font-semibold text-emerald-400">¡Hola! Soy el asistente virtual de Restaurante Verde Vida. Puedo ayudarte con:</p>
+                        <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs sm:text-sm pl-1">
+                            <li>Información sobre nuestro menú y platos del día</li>
+                            <li>Consultas sobre ingredientes y alérgenos</li>
+                            <li>Nuestros horarios y ubicación</li>
+                            <li>Información sobre reservas de mesa</li>
+                        </ul>
+                        <p class="pt-1 font-medium text-slate-200">¿En qué puedo ayudarte hoy?</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleReservationSubmit(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const newDoc = {
+                _id: generateObjectId(),
+                nombre: form.nombre.value.trim(),
+                email: form.email.value.trim(),
+                telefono: form.telefono.value.trim(),
+                fecha: form.fecha.value,
+                hora: form.hora.value,
+                comensales: form.comensales.value,
+                alergias: form.alergias.value.trim() || "Ninguna especificada",
+                ocasion: form.ocasion.value,
+                comoNosConocio: form.comoNosConocio.value,
+                createdAt: new Date().toISOString(),
+                estado: "Confirmada",
+                makeAutomation: {
+                    gmailConfirmationSent: true,
+                    googleCalendarEventCreated: true,
+                    executedAt: new Date().toISOString()
+                }
+            };
+
+            const collection = getMongoCollection();
+            collection.unshift(newDoc);
+            saveMongoCollection(collection);
+
+            form.reset();
+            
+            // Show custom modal confirmation
+            document.getElementById('confirmation-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+        }
+
+        let currentMongoView = 'cards';
+
+        function toggleMongoModal() {
+            const modal = document.getElementById('mongo-modal');
+            if (modal.classList.contains('hidden')) {
+                renderMongoContent();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function setMongoView(view) {
+            currentMongoView = view;
+            const btnCards = document.getElementById('btn-view-cards');
+            const btnJson = document.getElementById('btn-view-json');
+
+            if (view === 'cards') {
+                btnCards.className = "px-3 py-1.5 rounded-lg bg-brand-600 text-white font-medium";
+                btnJson.className = "px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium";
+            } else {
+                btnJson.className = "px-3 py-1.5 rounded-lg bg-brand-600 text-white font-medium";
+                btnCards.className = "px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium";
+            }
+
+            renderMongoContent();
+        }
+
+        function renderMongoContent() {
+            const container = document.getElementById('mongo-content');
+            const docs = getMongoCollection();
+
+            if (docs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 text-gray-400 space-y-4">
+                        <i class="fa-solid fa-folder-open text-5xl text-gray-600"></i>
+                        <p class="text-base font-semibold">La colección \`reservas\` está vacía.</p>
+                        <p class="text-xs text-gray-500">Rellena el formulario de la página web o haz clic en "Insertar Demo Doc" para ver registros.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentMongoView === 'cards') {
+                let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+                docs.forEach((doc, idx) => {
+                    html += `
+                        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg relative space-y-3">
+                            <div class="flex items-start justify-between border-b border-slate-700 pb-3">
+                                <div>
+                                    <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                                        _id: ${doc._id}
+                                    </span>
+                                    <h4 class="text-base font-bold text-white font-title mt-1">${doc.nombre}</h4>
+                                </div>
+                                <button onclick="deleteDoc('${doc._id}')" class="text-slate-400 hover:text-red-400 transition text-sm p-1" title="Eliminar Documento">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                                <div><strong class="text-slate-400">Email:</strong> ${doc.email}</div>
+                                <div><strong class="text-slate-400">Teléfono:</strong> ${doc.telefono}</div>
+                                <div><strong class="text-slate-400">Fecha Reserva:</strong> ${doc.fecha}</div>
+                                <div><strong class="text-slate-400">Hora:</strong> ${doc.hora} hs</div>
+                                <div><strong class="text-slate-400">Comensales:</strong> ${doc.comensales}</div>
+                                <div><strong class="text-slate-400">Ocasión:</strong> ${doc.ocasion || 'Ninguna'}</div>
+                            </div>
+
+                            <div class="text-xs bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-slate-300">
+                                <strong class="text-slate-400">Alergias/Intolerancias:</strong> ${doc.alergias || 'Ninguna'}
+                            </div>
+
+                            <div class="pt-2 flex items-center justify-between text-[11px] border-t border-slate-700/80">
+                                <span class="text-slate-400">Canal: ${doc.comoNosConocio}</span>
+                                <span class="bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-700 flex items-center gap-1 font-semibold">
+                                    <i class="fa-solid fa-circle-check text-[10px]"></i> Make & Gmail OK
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                // JSON Raw BSON View
+                const jsonFormatted = docs.map(d => JSON.stringify(d, null, 2)).join(',\n');
+                container.innerHTML = `
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 font-mono text-xs overflow-x-auto text-emerald-300 leading-relaxed custom-scrollbar">
+                        <pre>[
+${jsonFormatted}
+]</pre>
+                    </div>
+                `;
+            }
+        }
+
+        function deleteDoc(id) {
+            let docs = getMongoCollection();
+            docs = docs.filter(d => d._id !== id);
+            saveMongoCollection(docs);
+            renderMongoContent();
+        }
+
+        function clearMongoDb() {
+            saveMongoCollection([]);
+            renderMongoContent();
+        }
+
+        function seedSampleData() {
+            const names = ["Carlos Ruiz", "Elena Blanco", "David Fernández", "Sofía Moreno"];
+            const name = names[Math.floor(Math.random() * names.length)];
+            const newDoc = {
+                _id: generateObjectId(),
+                nombre: name,
+                email: name.toLowerCase().replace(' ', '.') + "@ejemplo.com",
+                telefono: "+34 699 " + Math.floor(100000 + Math.random() * 900000),
+                fecha: "2026-05-20",
+                hora: "21:00",
+                comensales: "4",
+                alergias: "Sin gluten",
+                ocasion: "Cumpleaños",
+                comoNosConocio: "Recomendación",
+                createdAt: new Date().toISOString(),
+                estado: "Confirmada",
+                makeAutomation: {
+                    gmailConfirmationSent: true,
+                    googleCalendarEventCreated: true,
+                    executedAt: new Date().toISOString()
+                }
+            };
+            const docs = getMongoCollection();
+            docs.unshift(newDoc);
+            saveMongoCollection(docs);
+            renderMongoContent();
+        }
+
+        function simulateMakeTrigger() {
+            seedSampleData();
+            const container = document.getElementById('mongo-content');
+            const alertBanner = `
+                <div class="mb-4 bg-amber-900/50 border border-amber-600 text-amber-200 p-3 rounded-xl text-xs flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400 text-base"></i>
+                        <span><strong>Make (Integromat) Trigger:</strong> Nueva fila/documento detectado en MongoDB. Se ha enviado email por Gmail y creado evento en Google Calendar.</span>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('afterbegin', alertBanner);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateNavDbCount();
+            
+            // Set default date input to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateInput = document.getElementById('fecha');
+            if (dateInput) {
+                dateInput.value = tomorrow.toISOString().split('T')[0];
+                dateInput.min = new Date().toISOString().split('T')[0];
+            }
+        });
+    </script>
+</body>
+</html>
