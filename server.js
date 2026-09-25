@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 
@@ -12,14 +13,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// SERVIR ARCHIVOS ESTÁTICOS (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
+// SERVIR ARCHIVOS ESTÁTICOS (Busca tanto en 'public' como en la raíz)
+if (fs.existsSync(path.join(__dirname, 'public'))) {
+  app.use(express.static(path.join(__dirname, 'public')));
+}
+app.use(express.static(__dirname));
 
 // CONEXIÓN A MONGODB ATLAS
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.error('❌ Error: Falta la variable MONGODB_URI en el archivo .env o en las variables de Render.');
+  console.error('❌ Error: Falta la variable MONGODB_URI en las variables de entorno.');
 } else {
   mongoose.connect(MONGODB_URI)
     .then(() => console.log('✅ Conectado exitosamente a MongoDB Atlas'))
@@ -42,7 +46,7 @@ const reservaSchema = new mongoose.Schema({
 
 const Reserva = mongoose.model('Reserva', reservaSchema);
 
-// CONFIGURACIÓN DE NODEMAILER (COMPATIBLE CON RENDER - PUERTO 587 E IPv4)
+// CONFIGURACIÓN DE NODEMAILER (PUERTO 587 E IPv4 COMPATIBLE CON RENDER)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
@@ -54,13 +58,13 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false
   },
-  connectionTimeout: 10000, // Timeout de 10 segundos
+  connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000,
-  family: 4 // Fuerza conexión por IPv4 (evita bloqueos de IPv6 en Render)
+  family: 4 // Fuerza el uso de IPv4
 });
 
-// RUTA POST: CREAR RESERVA Y ENVIAR EMAIL
+// RUTA POST: CREAR RESERVA Y ENVIAR CORREO
 app.post('/api/reservas', async (req, res) => {
   try {
     const { nombre, email, telefono, fecha, hora, comensales, alergias, ocasion, origen } = req.body;
@@ -153,13 +157,22 @@ app.post('/api/chat', (req, res) => {
   return res.json({ respuesta });
 });
 
-// SERVIR EL FRONTEND EN CUALQUIER OTRA RUTA
+// SERVIR EL FRONTEND (DETECTA AUTOMÁTICAMENTE SI index.html ESTÁ EN 'public' O EN LA RAÍZ)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const publicIndexPath = path.join(__dirname, 'public', 'index.html');
+  const rootIndexPath = path.join(__dirname, 'index.html');
+
+  if (fs.existsSync(publicIndexPath)) {
+    res.sendFile(publicIndexPath);
+  } else if (fs.existsSync(rootIndexPath)) {
+    res.sendFile(rootIndexPath);
+  } else {
+    res.status(404).send('Error: No se encontró el archivo index.html en el servidor.');
+  }
 });
 
 // PUERTO DE ESCUCHA (ADAPTATIVO PARA RENDER)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor listo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor listo en puerto ${PORT}`);
 });
