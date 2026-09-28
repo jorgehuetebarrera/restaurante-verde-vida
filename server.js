@@ -45,7 +45,7 @@ const reservaSchema = new mongoose.Schema({
 
 const Reserva = mongoose.model('Reserva', reservaSchema);
 
-// RUTA POST: CREAR RESERVA Y ENVIAR EMAIL VÍA RESEND API (PUERTO 443)
+// RUTA POST: CREAR RESERVA Y ENVIAR EMAIL DESDE TU GMAIL VÍA GOOGLE APPS SCRIPT
 app.post('/api/reservas', async (req, res) => {
   try {
     const { nombre, email, telefono, fecha, hora, comensales, alergias, ocasion, origen } = req.body;
@@ -66,18 +66,14 @@ app.post('/api/reservas', async (req, res) => {
     await nuevaReserva.save();
     console.log(`✅ Reserva guardada en MongoDB para ${nombre}`);
 
-    // 2. Enviar email de confirmación mediante la API HTTP de Resend
-    if (process.env.RESEND_API_KEY) {
+    // 2. Enviar email de confirmación desde tu Gmail a CUALQUIER destinatario
+    if (process.env.GOOGLE_SCRIPT_URL) {
       try {
-        const resendResponse = await fetch('https://api.resend.com/emails', {
+        const googleResponse = await fetch(process.env.GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            from: 'Restaurante Verde Vida <onboarding@resend.dev>',
-            to: [email],
+            to: email, // Correo del cliente que reserva
             subject: 'Confirmación de tu reserva - Restaurante Verde Vida',
             text: `¡Reserva Confirmada en Verde Vida! 🌿\n\n` +
                   `Hola ${nombre},\n\n` +
@@ -93,18 +89,12 @@ app.post('/api/reservas', async (req, res) => {
           })
         });
 
-        const resData = await resendResponse.json();
-
-        if (resendResponse.ok) {
-          console.log(`✉️ Correo de confirmación enviado con éxito a ${email}`);
-        } else {
-          console.error('⚠️ Detalle de Resend al enviar correo:', resData);
-        }
+        console.log(`✉️ Correo enviado desde tu Gmail a ${email} vía Google Apps Script`);
       } catch (mailErr) {
-        console.error('⚠️ Excepción al contactar con la API de Resend:', mailErr.message);
+        console.error('⚠️ Excepción al enviar correo mediante Google:', mailErr.message);
       }
     } else {
-      console.warn('⚠️ Variable RESEND_API_KEY no configurada. Omitiendo envío de email.');
+      console.warn('⚠️ Variable GOOGLE_SCRIPT_URL no configurada. Omitiendo envío de email.');
     }
 
     // 3. Responder al cliente
